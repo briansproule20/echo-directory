@@ -33,13 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex h-screen flex-col bg-background antialiased`}
       >
         <Providers>
           <Header title="The Echo App Directory" />
-          <div className="min-h-0 flex-1">{children}</div>
+          <div className="relative min-h-0 flex-1 overflow-hidden">
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

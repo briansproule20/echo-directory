@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm install)",
       "Bash(npm run dev:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(curl:*)",
+      "Read(//Users/briansproule/**)",
+      "Bash(cat:*)",
+      "WebFetch(domain:echo.merit.systems)"
     ],
     "deny": [],
     "ask": []

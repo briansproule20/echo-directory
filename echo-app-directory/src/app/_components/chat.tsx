@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { CopyIcon, MessageSquare } from 'lucide-react';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Action, Actions } from '@/components/ai-elements/actions';
 import {
   Conversation,
@@ -50,15 +50,24 @@ const models = [
 ];
 
 const suggestions = [
-  'Can you explain how to play tennis?',
-  'Write me a code snippet of how to use the vercel ai sdk to create a chatbot',
-  'How do I make a really good fish taco?',
+  'What Echo apps are available?',
+  'Show me the most popular apps',
+  'What kinds of apps are missing from Echo?',
+  'Which app should I use for AI chat?',
 ];
 
 const ChatBotDemo = () => {
   const [input, setInput] = useState('');
   const [model, setModel] = useState<string>(models[0].value);
   const { messages, sendMessage, status } = useChat();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages, status]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,10 +96,11 @@ const ChatBotDemo = () => {
   };
 
   return (
-    <div className="mx-auto flex h-full max-w-4xl flex-col p-6">
-      <div className="flex h-full min-h-0 flex-col">
-        <Conversation className="relative min-h-0 w-full flex-1 overflow-hidden">
-          <ConversationContent>
+    <div className="relative flex h-full w-full flex-col overflow-hidden">
+      <div ref={scrollAreaRef} className="flex-1 overflow-y-auto scroll-smooth">
+        <div className="mx-auto max-w-4xl p-6">
+          <Conversation className="relative w-full">
+            <ConversationContent>
             {messages.length === 0 ? (
               <ConversationEmptyState
                 icon={<MessageSquare className="size-12" />}
@@ -173,51 +183,60 @@ const ChatBotDemo = () => {
                 </div>
               ))
             )}
-            {status === 'submitted' && <Loader />}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
-        <Suggestions>
-          {suggestions.map(suggestion => (
-            <Suggestion
-              key={suggestion}
-              onClick={handleSuggestionClick}
-              suggestion={suggestion}
-            />
-          ))}
-        </Suggestions>
+              {status === 'submitted' && <Loader />}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </Conversation>
+          
+          {messages.length === 0 && (
+            <Suggestions className="mt-6">
+              {suggestions.map(suggestion => (
+                <Suggestion
+                  key={suggestion}
+                  onClick={handleSuggestionClick}
+                  suggestion={suggestion}
+                />
+              ))}
+            </Suggestions>
+          )}
+        </div>
+      </div>
 
-        <PromptInput onSubmit={handleSubmit} className="mt-4 flex-shrink-0">
-          <PromptInputTextarea
-            onChange={e => setInput(e.target.value)}
-            value={input}
-          />
-          <PromptInputToolbar>
-            <PromptInputTools>
-              <PromptInputModelSelect
-                onValueChange={value => {
-                  setModel(value);
-                }}
-                value={model}
-              >
-                <PromptInputModelSelectTrigger>
-                  <PromptInputModelSelectValue />
-                </PromptInputModelSelectTrigger>
-                <PromptInputModelSelectContent>
-                  {models.map(model => (
-                    <PromptInputModelSelectItem
-                      key={model.value}
-                      value={model.value}
-                    >
-                      {model.name}
-                    </PromptInputModelSelectItem>
-                  ))}
-                </PromptInputModelSelectContent>
-              </PromptInputModelSelect>
-            </PromptInputTools>
-            <PromptInputSubmit disabled={!input} status={status} />
-          </PromptInputToolbar>
-        </PromptInput>
+      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto max-w-4xl p-4">
+          <PromptInput onSubmit={handleSubmit}>
+            <PromptInputTextarea
+              onChange={e => setInput(e.target.value)}
+              value={input}
+              placeholder="Ask about Echo apps..."
+            />
+            <PromptInputToolbar>
+              <PromptInputTools>
+                <PromptInputModelSelect
+                  onValueChange={value => {
+                    setModel(value);
+                  }}
+                  value={model}
+                >
+                  <PromptInputModelSelectTrigger>
+                    <PromptInputModelSelectValue />
+                  </PromptInputModelSelectTrigger>
+                  <PromptInputModelSelectContent>
+                    {models.map(model => (
+                      <PromptInputModelSelectItem
+                        key={model.value}
+                        value={model.value}
+                      >
+                        {model.name}
+                      </PromptInputModelSelectItem>
+                    ))}
+                  </PromptInputModelSelectContent>
+                </PromptInputModelSelect>
+              </PromptInputTools>
+              <PromptInputSubmit disabled={!input} status={status} />
+            </PromptInputToolbar>
+          </PromptInput>
+        </div>
       </div>
     </div>
   );
