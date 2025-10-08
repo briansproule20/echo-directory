@@ -17,12 +17,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log('Fetching apps with authentication via tRPC...');
-
-    // Just fetch first page (50 apps) - much faster and sufficient for the chatbot
+    console.log('Fetching all apps with authentication via tRPC...');
+    
+    // Fetch all apps at once with a large limit
     const input = JSON.stringify({
       json: {
-        page_size: 50,
+        page_size: 1000, // Large number to get all apps
       },
     });
 
@@ -53,82 +53,9 @@ export async function GET(request: NextRequest) {
     }
 
     const allApps = data.items || [];
-    console.log(`Successfully fetched ${allApps.length} apps`);
+    console.log(`Successfully fetched ${allApps.length} total apps`);
 
-    // Check if stats should be fetched (only for small sets to avoid overwhelming the API)
-    const shouldFetchStats = request.nextUrl.searchParams.get('includeStats') === 'true';
-    
-    if (shouldFetchStats && allApps.length <= 20) {
-      // Only fetch stats for a small number of apps and batch them
-      console.log('Fetching stats for top apps...');
-      
-      // Process in batches of 5 to avoid overwhelming the API
-      const batchSize = 5;
-      const appsWithStats = [];
-      
-      for (let i = 0; i < allApps.length; i += batchSize) {
-        const batch = allApps.slice(i, i + batchSize);
-        const batchResults = await Promise.all(
-          batch.map(async (app: any) => {
-            try {
-              const statsInput = JSON.stringify({
-                json: { appId: app.id },
-              });
-
-              const statsUrl = `https://echo.merit.systems/api/trpc/apps.app.users.count,apps.app.transactions.count,apps.app.earnings.get?batch=1&input=${encodeURIComponent(
-                `{"0":${statsInput},"1":${statsInput},"2":${statsInput}}`
-              )}`;
-
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-              const statsResponse = await fetch(statsUrl, {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`,
-                },
-                cache: 'no-store',
-                signal: controller.signal,
-              });
-
-              clearTimeout(timeoutId);
-
-              if (statsResponse.ok) {
-                const statsData = await statsResponse.json();
-                return {
-                  ...app,
-                  stats: {
-                    users: statsData[0]?.result?.data?.json || 0,
-                    transactions: statsData[1]?.result?.data?.json || 0,
-                    earnings: statsData[2]?.result?.data?.json || 0,
-                  },
-                };
-              }
-              return app;
-            } catch (error) {
-              // Silently fail and return app without stats
-              return app;
-            }
-          })
-        );
-        appsWithStats.push(...batchResults);
-        
-        // Small delay between batches
-        if (i + batchSize < allApps.length) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
-      
-      console.log(`Enriched ${appsWithStats.filter(a => a.stats).length} apps with stats`);
-      
-      return NextResponse.json({
-        success: true,
-        apps: appsWithStats,
-        total: appsWithStats.length,
-      });
-    }
-
-    // Return apps without stats (much faster)
+    // Return all apps
     return NextResponse.json({
       success: true,
       apps: allApps,
