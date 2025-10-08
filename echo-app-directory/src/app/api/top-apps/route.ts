@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       for (let i = 0; i < allApps.length; i += batchSize) {
         const batch = allApps.slice(i, i + batchSize);
         const batchResults = await Promise.all(
-          batch.map(async (app) => {
+          batch.map(async (app: any) => {
             try {
               const statsInput = JSON.stringify({
                 json: { appId: app.id },
