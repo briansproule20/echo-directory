@@ -1,19 +1,23 @@
-import Chat from '@/app/_components/chat';
 import SignInButton from '@/app/_components/echo/sign-in-button';
 import { DotBackground } from '@/components/ui/dot-background';
 import { isSignedIn } from '@/echo';
+import { Button } from '@/components/ui/button';
+import { MessageSquare, Library, Zap, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function Home() {
   const signedIn = await isSignedIn();
 
-  if (!signedIn) {
-    return (
-      <DotBackground className="flex min-h-full items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-8 text-center">
-          <div className="space-y-3">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/70 shadow-lg shadow-primary/20">
+  return (
+    <div className="relative h-full w-full overflow-y-auto scroll-smooth">
+      <DotBackground className="pointer-events-none absolute inset-0" />
+      <div className="relative z-10 flex min-h-full flex-col items-center justify-center p-6 py-12">
+        <div className="mx-auto w-full max-w-5xl space-y-12 text-center">
+          {/* Hero Section */}
+          <div className="space-y-6">
+            <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-primary to-primary/70 shadow-2xl shadow-primary/20">
               <svg
-                className="h-10 w-10 text-primary-foreground"
+                className="h-12 w-12 text-primary-foreground"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -27,30 +31,95 @@ export default async function Home() {
               </svg>
             </div>
 
-            <h2 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-4xl text-transparent tracking-tight">
-              Welcome to Echo
-            </h2>
-            <p className="mx-auto max-w-sm text-muted-foreground text-sm leading-relaxed">
-              AI-powered chat with built-in billing and user management.
-              Start your conversation today.
+            <h1 className="bg-gradient-to-r from-foreground via-foreground to-foreground/70 bg-clip-text font-bold text-5xl text-transparent tracking-tight sm:text-6xl lg:text-7xl">
+              Echo App Directory
+            </h1>
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground leading-relaxed sm:text-xl">
+              Discover, explore, and connect with applications built on the Echo platform.
+              Find the perfect app or identify gaps in the ecosystem.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <SignInButton />
+          {/* CTA Section */}
+          {!signedIn ? (
+            <div className="space-y-6">
+              <SignInButton />
+              <p className="text-muted-foreground/80 text-sm">
+                Secure authentication with built-in AI billing
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Button asChild size="lg" className="group gap-2 px-8">
+                <Link href="/chat">
+                  <MessageSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  Start Chatting
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="gap-2 px-8">
+                <Link href="/library">
+                  <Library className="h-5 w-5" />
+                  Browse Library
+                </Link>
+              </Button>
+            </div>
+          )}
 
-            <p className="text-muted-foreground/80 text-xs">
-              Secure authentication with built-in AI billing
-            </p>
+          {/* Features Grid */}
+          <div className="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-2 font-semibold text-lg">AI-Powered Chat</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Ask about any Echo app and get instant, intelligent responses
+              </p>
+            </div>
+
+            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <Library className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-2 font-semibold text-lg">App Library</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Browse all Echo applications with detailed stats and information
+              </p>
+            </div>
+
+            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 sm:col-span-2 lg:col-span-1">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="mb-2 font-semibold text-lg">Ecosystem Insights</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Identify gaps and opportunities in the Echo platform
+              </p>
+            </div>
           </div>
+
+          {/* Stats */}
+          {signedIn && (
+            <div className="mx-auto mt-12 flex max-w-3xl items-center justify-center gap-8 rounded-2xl border border-border/50 bg-card/60 p-8 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <Zap className="h-8 w-8 text-primary" />
+                <div className="text-left">
+                  <p className="font-bold text-2xl text-foreground">50+</p>
+                  <p className="text-muted-foreground text-sm">Echo Apps</p>
+                </div>
+              </div>
+              <div className="h-12 w-px bg-border/50" />
+              <div className="flex items-center gap-3">
+                <TrendingUp className="h-8 w-8 text-primary" />
+                <div className="text-left">
+                  <p className="font-bold text-2xl text-foreground">Live</p>
+                  <p className="text-muted-foreground text-sm">Real-time Data</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </DotBackground>
-    );
-  }
-
-  return (
-    <DotBackground className="h-full">
-      <Chat />
-    </DotBackground>
+      </div>
+    </div>
   );
 }
