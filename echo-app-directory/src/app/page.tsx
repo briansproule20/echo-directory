@@ -4,6 +4,7 @@ import { isSignedIn } from '@/echo';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Library, Zap, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default async function Home() {
   const signedIn = await isSignedIn();
@@ -49,25 +50,63 @@ export default async function Home() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg" className="group gap-2 px-8">
-                <Link href="/chat">
-                  <MessageSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
-                  Start Chatting
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="gap-2 px-8">
-                <Link href="/library">
-                  <Library className="h-5 w-5" />
-                  Browse Library
-                </Link>
-              </Button>
+            <div className="space-y-6">
+              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <Button asChild size="lg" className="group gap-2 px-8">
+                  <Link href="/chat">
+                    <MessageSquare className="h-5 w-5 transition-transform group-hover:scale-110" />
+                    Start Chatting
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="gap-2 px-8">
+                  <Link href="/library">
+                    <Library className="h-5 w-5" />
+                    Browse Library
+                  </Link>
+                </Button>
+              </div>
+              
+              {/* Echo Ideas CTA */}
+              <div className="mx-auto max-w-2xl rounded-2xl border border-amber-600/20 bg-gradient-to-r from-amber-600/8 to-amber-600/4 p-6 backdrop-blur-sm transition-all hover:border-amber-600/30">
+                <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-amber-600/20 bg-gradient-to-br from-amber-600/10 to-amber-600/5 shadow-md">
+                    <Image
+                      src="/echo-ideasfavicon.png"
+                      alt="Echo Ideas"
+                      fill
+                      className="object-cover p-2"
+                      sizes="64px"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <h3 className="font-semibold text-foreground text-lg">
+                      Found a gap? Build your idea!
+                    </h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Take insights from the directory to Echo Ideas and turn them into fully-fleshed app concepts
+                    </p>
+                  </div>
+                  <Button asChild className="gap-2 whitespace-nowrap bg-amber-600 hover:bg-amber-700">
+                    <a
+                      href="https://echo-ideas-nu.vercel.app"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Zap className="h-4 w-4" />
+                      Echo Ideas
+                    </a>
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Features Grid */}
           <div className="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+            <Link 
+              href="/chat"
+              className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 hover:cursor-pointer"
+            >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
@@ -75,9 +114,12 @@ export default async function Home() {
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Ask about any Echo app and get instant, intelligent responses
               </p>
-            </div>
+            </Link>
 
-            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5">
+            <Link
+              href="/library"
+              className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 hover:cursor-pointer"
+            >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <Library className="h-6 w-6 text-primary" />
               </div>
@@ -85,9 +127,12 @@ export default async function Home() {
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Browse all Echo applications with detailed stats and information
               </p>
-            </div>
+            </Link>
 
-            <div className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 sm:col-span-2 lg:col-span-1">
+            <Link
+              href="/chat"
+              className="group rounded-2xl border border-border/50 bg-card/80 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 hover:cursor-pointer sm:col-span-2 lg:col-span-1"
+            >
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <TrendingUp className="h-6 w-6 text-primary" />
               </div>
@@ -95,29 +140,9 @@ export default async function Home() {
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Identify gaps and opportunities in the Echo platform
               </p>
-            </div>
+            </Link>
           </div>
 
-          {/* Stats */}
-          {signedIn && (
-            <div className="mx-auto mt-12 flex max-w-3xl items-center justify-center gap-8 rounded-2xl border border-border/50 bg-card/60 p-8 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <Zap className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="font-bold text-2xl text-foreground">50+</p>
-                  <p className="text-muted-foreground text-sm">Echo Apps</p>
-                </div>
-              </div>
-              <div className="h-12 w-px bg-border/50" />
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-8 w-8 text-primary" />
-                <div className="text-left">
-                  <p className="font-bold text-2xl text-foreground">Live</p>
-                  <p className="text-muted-foreground text-sm">Real-time Data</p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
